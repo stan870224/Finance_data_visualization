@@ -1,6 +1,6 @@
 import yfinance as yf
 from datetime import datetime, timedelta
-import finance_catch_10y as fi
+import Finance_Catch_10y as fi
 import pandas as pd
 
 
