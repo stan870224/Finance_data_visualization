@@ -3,6 +3,7 @@ import yfinance as yf
 import pyodbc
 import os
 from datetime import datetime, timedelta
+from sql_login_info import mssql_login_info
 
 
 def fetch_stock_codes(input_file):
@@ -149,8 +150,8 @@ def main():
     file_path = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep +'top_market_cap_by_sector'
     input_file = os.path.join(file_path,'top_market_cap_by_sector.csv')
     table_name = 'Stock_Historical_Data'
-    server = 'localhost'
-    database = 'Finance_data'
+    server, database, username, password = mssql_login_info()
+    
 
     # 設定查詢範圍為過去十年
     end_date = datetime.today().strftime('%Y-%m-%d')
@@ -164,10 +165,7 @@ def main():
     historical_data = fetch_historical_data(stock_codes, start_date, end_date)
 
     # 儲存至 MSSQL
-    username = 'tony'
-    password = '12345678'
-    save_to_mssql(historical_data, table_name, server,
-                  database, username, password)
+    save_to_mssql(historical_data, table_name, server, database, username, password)
 
 
 # 執行主程式
