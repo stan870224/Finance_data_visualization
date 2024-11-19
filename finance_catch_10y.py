@@ -1,6 +1,7 @@
 import pandas as pd
 import yfinance as yf
 import pyodbc
+import os
 from datetime import datetime, timedelta
 
 
@@ -145,7 +146,8 @@ def save_to_mssql(data, table_name, server, database, username, password):
 
 
 def main():
-    input_file = 'top_market_cap_by_sector.csv'
+    file_path = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep +'top_market_cap_by_sector'
+    input_file = os.path.join(file_path,'top_market_cap_by_sector.csv')
     table_name = 'Stock_Historical_Data'
     server = 'localhost'
     database = 'Finance_data'
