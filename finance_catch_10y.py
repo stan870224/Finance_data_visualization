@@ -2,7 +2,6 @@ import pandas as pd
 import yfinance as yf
 import pyodbc
 import os
-from datetime import datetime, timedelta
 
 
 def fetch_stock_codes(input_file):
@@ -109,21 +108,19 @@ def save_to_mssql(data, table_name, server, database, username, password):
         )
         """)
 
-
-
         for index, row_data in data.iterrows():
             try:
                 cursor.execute(
-                    "INSERT INTO " + table_name + 
+                    "INSERT INTO " + table_name +
                     " ([Trading_Date],[Open_Price],[High_Price],[Low_Price],[Close_Price],[Trading_Volume],[Stock_Code]) " +
                     "VALUES (?,?,?,?,?,?,?)",
                     (
-                        row_data['Date'].date(), 
-                        float(row_data['Open']), 
-                        float(row_data['High']), 
-                        float(row_data['Low']), 
-                        float(row_data['Close']), 
-                        int(row_data['Volume']), 
+                        row_data['Date'].date(),
+                        float(row_data['Open']),
+                        float(row_data['High']),
+                        float(row_data['Low']),
+                        float(row_data['Close']),
+                        int(row_data['Volume']),
                         str(row_data['Stock_Code'])
                     )
                 )
@@ -143,6 +140,7 @@ def save_to_mssql(data, table_name, server, database, username, password):
             conn.close()
 
 # 主程式
+
 
 """
 def main():
