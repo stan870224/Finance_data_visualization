@@ -3,7 +3,6 @@ import yfinance as yf
 import pyodbc
 import os
 from datetime import datetime, timedelta
-from Sql_Login_Info import mssql_login_info
 
 
 def fetch_stock_codes(input_file):
