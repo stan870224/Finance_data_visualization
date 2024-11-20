@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import os
 from data_save_func import data_save
 from finance_catch import aggregate_top_companies_by_sector, save_to_csv
 from finance_catch_10y import fetch_historical_data, fetch_stock_codes, save_to_mssql
