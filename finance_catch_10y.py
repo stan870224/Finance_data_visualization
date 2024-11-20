@@ -145,7 +145,7 @@ def save_to_mssql(data, table_name, server, database, username, password):
 
 # 主程式
 
-
+"""
 def main():
     file_path = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep +'top_market_cap_by_sector'
     input_file = os.path.join(file_path,'top_market_cap_by_sector.csv')
@@ -171,3 +171,5 @@ def main():
 # 執行主程式
 if __name__ == '__main__':
     main()
+
+"""

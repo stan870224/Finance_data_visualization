@@ -1,16 +1,12 @@
 from datetime import datetime, timedelta
 import os
+from data_save_func import data_save
 from finance_catch import aggregate_top_companies_by_sector, save_to_csv
 from finance_catch_10y import fetch_historical_data, fetch_stock_codes, save_to_mssql
 from sql_login_info import mssql_login_info
 
 def main():
-    data_dir = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep +'finance_data'
-    file_path = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep+'top_market_cap_by_sector'
-    output_file = os.path.join(file_path,'top_market_cap_by_sector.csv')
-    file_path = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep+'top_market_cap_by_sector'
-    input_file = os.path.join(file_path,'top_market_cap_by_sector.csv')
-    table_name = 'Stock_Historical_Data'
+    data_dir, file_path, output_file, input_file, table_name = data_save()
     server, database, username, password = mssql_login_info()
 
     # 設定查詢範圍為過去十年

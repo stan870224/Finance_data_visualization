@@ -80,6 +80,9 @@ def save_to_csv(df, output_file):
     df.to_csv(output_file, index=False)
     print(f"CSV檔案已儲存到 {output_file}!")
 
+
+
+"""
 # 使用函式
 if __name__ == "__main__":
     data_dir = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep +'finance_data'
@@ -92,3 +95,5 @@ if __name__ == "__main__":
 
     # 檢視前幾行結果
     print(result.head())
+
+"""
