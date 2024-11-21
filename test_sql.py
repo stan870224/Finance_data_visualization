@@ -1,7 +1,7 @@
 import yfinance as yf
 from datetime import datetime, timedelta
 import pandas as pd
-from finance_catch_10y import fetch_historical_data
+from library_clean_data_once.finance_catch_10y import fetch_historical_data
 
 
 end_date = datetime.today().strftime('%Y-%m-%d')
