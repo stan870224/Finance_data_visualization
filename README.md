@@ -26,7 +26,6 @@ project_directory/
 │       └── visualizer.py     # 數據視覺化處理
 │
 ├── main.py                   # 主程式入口
-├── requirements.txt          # 所需的 Python library
 └── README.md                 # 專案說明文件
 
 
