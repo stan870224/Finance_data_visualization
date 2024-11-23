@@ -1,6 +1,11 @@
 # Finance-data-visualization
  The goal is to apply Python data analysis libraries to visualize the performance of various Taiwanese stock sectors following the Federal Reserve's interest rate announcement.
 
+# Project Directory Structure
+
+This document outlines the structure of the project directory and the purpose of each file and folder.
+
+```plaintext
 project_directory/
 │
 ├── data/                     # 原始數據與處理後數據存放目錄
@@ -23,6 +28,7 @@ project_directory/
 ├── main.py                   # 主程式入口
 ├── requirements.txt          # 所需的 Python library
 └── README.md                 # 專案說明文件
+
 
 
 執行步驟 :
