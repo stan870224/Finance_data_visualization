@@ -1,8 +1,0 @@
-# 明確允許追蹤的文件
-!*.py          # Python 文件
-!*.md          # Markdown 文件（如 README.md）
-!requirements.txt  # 依賴列表
-
-# 忽略特定目錄和文件
-.mypy_cache/   # 忽略 MyPy 緩存
-*.json    # 忽略敏感配置文件
