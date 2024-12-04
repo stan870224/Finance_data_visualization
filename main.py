@@ -9,6 +9,11 @@ from modules.initialize_data.finance_catch_10y import (
     fetch_stock_codes
 )
 from modules.initialize_data.insert_sql import save_stock_data_to_mssql
+from modules.initialize_data.catch_economic_data import (
+    fetch_fred_data, 
+    get_cpi_data,
+    get_policy_rate_data
+)    
 from modules.shared_params.param_config import DatabaseConnection, mssql_login_info
 import os
 
