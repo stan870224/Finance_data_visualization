@@ -36,7 +36,7 @@ def fetch_fred_data(series_id, start_date, end_date, api_key):
     data = response.json()['observations']
     return pd.DataFrame(data)[['date', 'value']].rename(columns={'date': '日期', 'value': series_id})
 
-def save_to_mssql(df, table_name, mssql_config):
+def save_economic_data_to_mssql(df, table_name, mssql_config):
     """將 DataFrame 存入 MSSQL 資料库"""
     conn_str = (
         f"DRIVER={{SQL Server}};"
@@ -85,7 +85,7 @@ def get_policy_rate_data(start_date, end_date, api_key):
 
     return policy_rate_df
 
-# 獲取 CPI 數據
+# 獲取 CPI 數據 改成計算年增率四捨五入至小數後1位
 def get_cpi_data(start_date, end_date, api_key):
     cpi_df = fetch_fred_data('CPIAUCSL', start_date, end_date, api_key)
     cpi_df['CPIAUCSL'] = pd.to_numeric(cpi_df['CPIAUCSL'], errors='coerce')
@@ -101,11 +101,11 @@ def main():
     try:
         # 獲取政策利率數據
         policy_rate_df = get_policy_rate_data(start_date, end_date, FRED_API_KEY)
-        save_to_mssql(policy_rate_df, "PolicyRateTable", MSSQL_CONFIG)
+        save_economic_data_to_mssql(policy_rate_df, "PolicyRateTable", MSSQL_CONFIG)
 
         # 獲取 CPI 數據
         cpi_df = get_cpi_data(start_date, end_date, FRED_API_KEY)
-        save_to_mssql(cpi_df, "CpiTable", MSSQL_CONFIG)
+        save_economic_data_to_mssql(cpi_df, "CpiTable", MSSQL_CONFIG)
 
     except Exception as e:
         print(f"程式執行過程發生錯誤: {e}")
