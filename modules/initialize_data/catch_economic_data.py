@@ -64,5 +64,5 @@ def save_cpi_to_mssql(cpi_df):
     將 CPI 數據存入 MSSQL
     """
     db_connection = DatabaseConnection()
-    save_data_to_mssql(cpi_df, "CPI_ata", db_connection)
+    save_data_to_mssql(cpi_df, "CPI_Data", db_connection)
 
