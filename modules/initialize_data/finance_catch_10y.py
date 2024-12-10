@@ -69,34 +69,4 @@ def fetch_historical_data(stock_codes, start_date, end_date):
 
 
 
-# 主程式
 
-
-"""
-def main():
-    file_path = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep +'top_market_cap_by_sector'
-    input_file = os.path.join(file_path,'top_market_cap_by_sector.csv')
-    table_name = 'Stock_Historical_Data'
-    server, database, username, password = mssql_login_info()
-    
-
-    # 設定查詢範圍為過去十年
-    end_date = datetime.today().strftime('%Y-%m-%d')
-    start_date = (datetime.today() - timedelta(days=365*10)
-                  ).strftime('%Y-%m-%d')
-
-    # 取得代號列表
-    stock_codes = fetch_stock_codes(input_file)
-
-    # 獲取歷史數據
-    historical_data = fetch_historical_data(stock_codes, start_date, end_date)
-
-    # 儲存至 MSSQL
-    save_to_mssql(historical_data, table_name, server, database, username, password)
-
-
-# 執行主程式
-if __name__ == '__main__':
-    main()
-
-"""

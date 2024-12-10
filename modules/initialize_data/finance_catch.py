@@ -82,18 +82,3 @@ def save_to_csv(df, output_file):
 
 
 
-"""
-# 使用函式
-if __name__ == "__main__":
-    data_dir = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep +'finance_data'
-    file_path = 'D:' + os.path.sep + 'AI_course' + os.path.sep + 'Finance_data_visualization' + os.path.sep + 'Finance_data_visualization' + os.path.sep +'top_market_cap_by_sector'
-    output_file = os.path.join(file_path,'top_market_cap_by_sector.csv')
-
-    # 處理財務數據並儲存結果
-    result = aggregate_top_companies_by_sector(data_dir)
-    save_to_csv(result, output_file)
-
-    # 檢視前幾行結果
-    print(result.head())
-
-"""
