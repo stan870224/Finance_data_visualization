@@ -1,5 +1,7 @@
 CREATE TABLE INTEREST_RATE_DATA (
     ID INT IDENTITY(1,1) PRIMARY KEY,         -- 自動遞增的唯一識別碼
-    REPORT_DATE DATE NOT NULL,                -- 報告日期
-    FEDFUNDS DECIMAL(10, 4) NOT NULL          -- 聯邦基準利率（FEDFUNDS）
+    REPORT_DATE DATE NOT NULL,                -- 日期
+    UPPER_TARGET_RATE DECIMAL(10, 4) NOT NULL, -- 目標利率上限
+    LOWER_TARGET_RATE DECIMAL(10, 4) NOT NULL, -- 目標利率下限
+    POLICY_RATE DECIMAL(10, 4) NOT NULL        -- 政策利率
 );
