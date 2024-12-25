@@ -1,108 +1,150 @@
-from modules.shared_params.param_config import DatabaseConnection
-        
-def save_stock_data_to_mssql(data, table_name, db_connection):
+from modules.shared_params.param_config import DatabaseConnection,mssql_login_info
+
+def save_cpi_data_to_mssql(data, db_connection):
     """
-    將 DataFrame 存入 MSSQL 資料庫，使用 SQL Server 驗證。
+    將 CPI 數據存入 MSSQL 的 CPI_HISTORICAL_DATA 資料表。
 
     Args:
-        data (pd.DataFrame): 要存入的數據。
-        table_name (str): 資料表名稱。
-        server (str): MSSQL 伺服器名稱或 IP。
-        database (str): 資料庫名稱。
-        username (str): SQL Server 帳號。
-        password (str): SQL Server 密碼。
-    """
-    
-    try:
-        cursor = db_connection.get_cursor()
-        
-        # 創建資料表（如果不存在）
-        cursor.execute(f"""
-        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='{table_name}' AND xtype='U')
-        CREATE TABLE {table_name} (
-            [Trading_Date] DATE,
-            [Open_Price] FLOAT,
-            [High_Price] FLOAT,
-            [Low_Price] FLOAT,
-            [Close_Price] FLOAT,
-            [Trading_Volume] BIGINT,
-            [Stock_Code] VARCHAR(50)
-        )
-        """)
-
-        for index, row_data in data.iterrows():
-            try:
-                cursor.execute(
-                    "INSERT INTO " + table_name +
-                    " ([Trading_Date],[Open_Price],[High_Price],[Low_Price],[Close_Price],[Trading_Volume],[Stock_Code]) " +
-                    "VALUES (?,?,?,?,?,?,?)",
-                    (
-                        row_data['Date'].date(),
-                        float(row_data['Open']),
-                        float(row_data['High']),
-                        float(row_data['Low']),
-                        float(row_data['Close']),
-                        int(row_data['Volume']),
-                        str(row_data['Stock_Code'])
-                    )
-                )
-            except Exception as e:
-                print(f"插入數據時發生錯誤: {str(e)}")
-                print(f"錯誤數據: {row_data}")
-                continue
-
-        db_connection.conn.commit()
-        print(f"成功將數據存入資料表 {table_name}！")
-
-    except Exception as e:
-        print(f"儲存數據到 MSSQL 時發生錯誤: {str(e)}")
-        raise
-    finally:
-        # 確保關閉資料庫連線
-        db_connection.close()
-        
-def save_data_to_mssql(data, table_name, db_connection):
-    """
-    通用函式：將 DataFrame 存入 MSSQL 資料庫。
-    支援中文表名和列名。
-
-    Args:
-        data (pd.DataFrame): 要存入的數據。
-        table_name (str): 資料表名稱。
+        data (pd.DataFrame): 包含 CPI 數據的 DataFrame。
         db_connection (DatabaseConnection): MSSQL 資料庫連線物件。
     """
     try:
         cursor = db_connection.get_cursor()
 
-        # 動態生成表結構（處理中文列名）
-        column_definitions = ", ".join([
-            f"[{col}] FLOAT" if dtype in ['float64', 'int64'] else f"[{col}] NVARCHAR(MAX)"
-            for col, dtype in zip(data.columns, data.dtypes)
-        ])
-        create_table_query = f"""
-        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='{table_name}' AND xtype='U')
-        CREATE TABLE {table_name} ({column_definitions})
+        create_table_query = """
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='CPI_HISTORICAL_DATA' AND xtype='U')
+        CREATE TABLE CPI_HISTORICAL_DATA (
+            ID INT IDENTITY(1,1) PRIMARY KEY,
+            REPORT_DATE DATE NOT NULL,
+            CPIAUCSL DECIMAL(10, 2) NOT NULL,
+            MONTHLY_INFLATION_RATE DECIMAL(10, 4) NULL
+        )
         """
         cursor.execute(create_table_query)
         db_connection.conn.commit()
+        
+        # 自動生成 ID 欄位
+        data['ID'] = range(1, len(data) + 1)
 
-        # 準備批量插入（處理中文列名）
-        placeholders = ", ".join(["?" for _ in data.columns])
-        column_names = ", ".join([f"[{col}]" for col in data.columns])
-        insert_query = f"INSERT INTO {table_name} ({column_names}) VALUES ({placeholders})"
+        # 確保數據格式正確
+        data['REPORT_DATE'] = pd.to_datetime(data['REPORT_DATE'])
+        data['CPIAUCSL'] = pd.to_numeric(data['CPIAUCSL'], errors='coerce')
+        data['MONTHLY_INFLATION_RATE'] = pd.to_numeric(data['MONTHLY_INFLATION_RATE'], errors='coerce')
 
-        # 將數據轉換為元組列表
+        placeholders = "?, ?, ?"
+        insert_query = "INSERT INTO CPI_HISTORICAL_DATA (REPORT_DATE, CPIAUCSL, MONTHLY_INFLATION_RATE) VALUES (" + placeholders + ")"
         data_tuples = [tuple(row) for row in data.itertuples(index=False, name=None)]
 
-        # 批量插入
         cursor.executemany(insert_query, data_tuples)
         db_connection.conn.commit()
 
-        print(f"數據已成功存入資料表: {table_name}！")
+        print("CPI 數據已成功存入 CPI_HISTORICAL_DATA 資料表！")
 
     except Exception as e:
-        print(f"儲存數據到 MSSQL 時發生錯誤: {e}")
+        print(f"儲存 CPI 數據到 MSSQL 時發生錯誤: {e}")
         raise
     finally:
         db_connection.close()
+
+def save_interest_rate_data_to_mssql(data, db_connection):
+    """
+    將利率數據存入 MSSQL 的 INTEREST_RATE_DATA 資料表。
+
+    Args:
+        data (pd.DataFrame): 包含利率數據的 DataFrame。
+        db_connection (DatabaseConnection): MSSQL 資料庫連線物件。
+    """
+    try:
+        cursor = db_connection.get_cursor()
+
+        create_table_query = """
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='INTEREST_RATE_DATA' AND xtype='U')
+        CREATE TABLE INTEREST_RATE_DATA (
+            ID INT IDENTITY(1,1) PRIMARY KEY,
+            REPORT_DATE DATE NOT NULL,
+            UPPER_TARGET_RATE DECIMAL(10, 4) NOT NULL,
+            LOWER_TARGET_RATE DECIMAL(10, 4) NOT NULL,
+            POLICY_RATE DECIMAL(10, 4) NOT NULL
+        )
+        """
+        cursor.execute(create_table_query)
+        db_connection.conn.commit()
         
+        # 自動生成 ID 欄位
+        data['ID'] = range(1, len(data) + 1)
+
+        # 確保數據格式正確
+        data['REPORT_DATE'] = pd.to_datetime(data['REPORT_DATE'])
+        data['UPPER_TARGET_RATE'] = pd.to_numeric(data['UPPER_TARGET_RATE'], errors='coerce')
+        data['LOWER_TARGET_RATE'] = pd.to_numeric(data['LOWER_TARGET_RATE'], errors='coerce')
+        data['POLICY_RATE'] = pd.to_numeric(data['POLICY_RATE'], errors='coerce')
+
+        placeholders = "?, ?, ?, ?"
+        insert_query = "INSERT INTO INTEREST_RATE_DATA (REPORT_DATE, UPPER_TARGET_RATE, LOWER_TARGET_RATE, POLICY_RATE) VALUES (" + placeholders + ")"
+        data_tuples = [tuple(row) for row in data.itertuples(index=False, name=None)]
+
+        cursor.executemany(insert_query, data_tuples)
+        db_connection.conn.commit()
+
+        print("利率數據已成功存入 INTEREST_RATE_DATA 資料表！")
+
+    except Exception as e:
+        print(f"儲存利率數據到 MSSQL 時發生錯誤: {e}")
+        raise
+    finally:
+        db_connection.close()
+
+def save_stock_data_to_mssql(data, db_connection):
+    """
+    將股票數據存入 MSSQL 的 STOCK_HISTORICAL_DATA 資料表。
+
+    Args:
+        data (pd.DataFrame): 包含股票數據的 DataFrame。
+        db_connection (DatabaseConnection): MSSQL 資料庫連線物件。
+    """
+    try:
+        cursor = db_connection.get_cursor()
+
+        create_table_query = """
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='STOCK_HISTORICAL_DATA' AND xtype='U')
+        CREATE TABLE STOCK_HISTORICAL_DATA (
+            ID INT IDENTITY(1,1) PRIMARY KEY,
+            STOCK_CODE NVARCHAR(50) NOT NULL,
+            TRADE_DATE DATE NOT NULL,
+            OPEN_PRICE DECIMAL(18, 2) NULL,
+            HIGH_PRICE DECIMAL(18, 2) NULL,
+            LOW_PRICE DECIMAL(18, 2) NULL,
+            CLOSE_PRICE DECIMAL(18, 2) NULL,
+            ADJ_CLOSE_PRICE DECIMAL(18, 2) NULL,
+            VOLUME BIGINT NULL
+        )
+        """
+        cursor.execute(create_table_query)
+        db_connection.conn.commit()
+        
+          # 自動生成 ID 欄位
+        data['ID'] = range(1, len(data) + 1)
+
+        # 確保數據格式正確
+        data['TRADE_DATE'] = pd.to_datetime(data['TRADE_DATE'])
+        data['OPEN_PRICE'] = pd.to_numeric(data['OPEN_PRICE'], errors='coerce')
+        data['HIGH_PRICE'] = pd.to_numeric(data['HIGH_PRICE'], errors='coerce')
+        data['LOW_PRICE'] = pd.to_numeric(data['LOW_PRICE'], errors='coerce')
+        data['CLOSE_PRICE'] = pd.to_numeric(data['CLOSE_PRICE'], errors='coerce')
+        data['ADJ_CLOSE_PRICE'] = pd.to_numeric(data['ADJ_CLOSE_PRICE'], errors='coerce')
+        data['VOLUME'] = pd.to_numeric(data['VOLUME'], errors='coerce')
+
+        placeholders = "?, ?, ?, ?, ?, ?, ?, ?"
+        insert_query = "INSERT INTO STOCK_HISTORICAL_DATA (STOCK_CODE, TRADE_DATE, OPEN_PRICE, HIGH_PRICE, LOW_PRICE, CLOSE_PRICE, ADJ_CLOSE_PRICE, VOLUME) VALUES (" + placeholders + ")"
+        data_tuples = [tuple(row) for row in data.itertuples(index=False, name=None)]
+
+        cursor.executemany(insert_query, data_tuples)
+        db_connection.conn.commit()
+
+        print("股票數據已成功存入 STOCK_HISTORICAL_DATA 資料表！")
+
+    except Exception as e:
+        print(f"儲存股票數據到 MSSQL 時發生錯誤: {e}")
+        raise
+    finally:
+        db_connection.close()

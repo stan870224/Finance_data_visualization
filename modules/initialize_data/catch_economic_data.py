@@ -2,7 +2,7 @@ import json
 import pandas as pd
 import requests
 from datetime import datetime, timedelta
-from modules.initialize_data.insert_sql import save_data_to_mssql
+from modules.initialize_data.insert_sql import save_interest_rate_data_to_mssql, save_cpi_data_to_mssql
 from modules.shared_params.param_config import DatabaseConnection, mssql_login_info
 
     
@@ -58,7 +58,7 @@ def save_policy_rate_to_mssql(policy_rate_df):
     將政策利率數據存入 MSSQL
     """
     db_connection = DatabaseConnection(mssql_login_info)
-    save_data_to_mssql(policy_rate_df, "Policy_Rate_Data", db_connection)
+    save_interest_rate_data_to_mssql(policy_rate_df, db_connection)
 
 
 def save_cpi_to_mssql(cpi_df):
@@ -66,5 +66,5 @@ def save_cpi_to_mssql(cpi_df):
     將 CPI 數據存入 MSSQL
     """
     db_connection = DatabaseConnection(mssql_login_info)
-    save_data_to_mssql(cpi_df, "CPI_Data", db_connection)
+    save_cpi_data_to_mssql(cpi_df, db_connection)
 
