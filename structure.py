@@ -16,13 +16,13 @@ def print_directory_structure(start_path, indent=0):
             continue
         
         if os.path.isdir(item_path):
-            print('  ' * indent + f'📂 {item}')  # 資料夾顯示
+            print('  ' * indent + f' {item}')  # 資料夾顯示
             print_directory_structure(item_path, indent + 1)
         else:
-            print('  ' * indent + f'📄 {item}')  # 檔案顯示
+            print('  ' * indent + f' {item}')  # 檔案顯示
 
 if __name__ == "__main__":
     # 替換為您的專案根目錄
-    project_root = "D:\\AI_course\\Finance_data_visualization"
+    project_root = f"./code/Finance_data_visualization"
     print(f"Project Directory Structure ({project_root}):\n")
     print_directory_structure(project_root)
